@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Article extends Model
 {
-    public function scopeSort(Builder $query, array $filters)
+    public function scopeSort(Builder $query, array $filters): Builder
     {
         $column = ($filters['sort'] === 'comment_count') ? 'comments_count' : 'created_at';
 
@@ -23,6 +23,16 @@ class Article extends Model
             Comment::class,
             'article_comment',
             'comment_id',
+            'article_id',
+        );
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Tag::class,
+            'article_tag',
+            'tag_id',
             'article_id',
         );
     }

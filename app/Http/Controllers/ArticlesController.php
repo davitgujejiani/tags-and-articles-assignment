@@ -19,7 +19,7 @@ class ArticlesController extends Controller
             'page'     => $request->input('page') ?? 1,
         ];
 
-        $articles = Article::sort($filters);
+        $articles = Article::sort($filters)->with('tags');
 
         if ($filters['paginate']) {
             return $articles->paginate($filters['paginate'], ['*'], 'page', $filters['page']);
