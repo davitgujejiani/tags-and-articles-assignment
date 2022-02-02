@@ -19,7 +19,13 @@ class ArticlesController extends Controller
             'page'     => $request->input('page') ?? 1,
         ];
 
-        return Article::sort($filters)->get();
+        $articles = Article::sort($filters);
+
+        if ($filters['paginate']) {
+            return $articles->paginate($filters['paginate'], ['*'], 'page', $filters['page']);
+        }
+
+        return $articles->get();
     }
 
     public function comments()
