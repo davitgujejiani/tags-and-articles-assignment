@@ -15,8 +15,8 @@ class ArticlesRepository implements ArticlesRepositoryContract
         return Article::sort($filters)->with('tags');
     }
 
-    public function getArticleComments(array $filters)
+    public function getArticleComments(Article $article, array $filters)
     {
-        // TODO: Implement getArticleComments() method.
+        return $article->comments()->sort($filters)->get();
     }
 }

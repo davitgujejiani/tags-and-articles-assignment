@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Services\ArticleService;
+use App\Services\ArticlesService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ArticlesController extends Controller
 {
-    public function index(Request $request, ArticleService $service): Collection|LengthAwarePaginator
+    public function index(Request $request, ArticlesService $service): Collection|LengthAwarePaginator
     {
         $filters = [
             'sort'     => $request->input('sort') ?? 'created_at',
@@ -25,10 +25,10 @@ class ArticlesController extends Controller
         return $service->articles($filters);
     }
 
-    public function comments(Request $request, Article $article): Collection
+    public function comments(Request $request, ArticlesService $service, Article $article): Collection
     {
         $filters = ['order' => $request->input('order') ?? 'desc'];
 
-        return $article->comments()->sort($filters)->get();
+        return $service->articleComments($article, $filters);
     }
 }

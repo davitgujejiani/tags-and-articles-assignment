@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Contracts\ArticlesRepositoryContract;
 use App\Models\Article;
 
-class ArticleService
+class ArticlesService
 {
     private ArticlesRepositoryContract $repository;
 
