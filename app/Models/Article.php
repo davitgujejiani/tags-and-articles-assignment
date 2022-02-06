@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Article extends Model
 {
+    protected $hidden = ['pivot'];
+
     public function scopeSort(Builder $query, array $filters): Builder
     {
         $column = ($filters['sort'] === 'comment_count') ? 'comments_count' : 'created_at';

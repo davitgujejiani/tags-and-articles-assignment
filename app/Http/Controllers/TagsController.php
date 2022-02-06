@@ -17,7 +17,7 @@ class TagsController extends Controller
         ];
 
         // fetch tags data and turn it into collection
-        $tags = collect(Tag::withArticlesCount()->with('articles')->get());
+        $tags = collect(Tag::withArticlesCount()->with('articlesByOldest')->get());
 
         // add the oldest article relation created_at attribute to tag collection for sorting purposes
         foreach ($tags as $tag) {
@@ -37,8 +37,22 @@ class TagsController extends Controller
         return $tags;
     }
 
-    public function articles()
+    public function articles(Request $request, Tag $tag)
     {
-        // todo: return articles by tags
+        $filters = [
+            'sort'     => $request->input('sort') ?? 'created_at',
+            'order'    => $request->input('order') ?? 'desc',
+            'limit'    => $request->input('limit') ?? '10',
+            'paginate' => $request->input('paginate') ?? null,
+            'page'     => $request->input('page') ?? 1,
+        ];
+
+        $articles = $tag->articles()->sort($filters);
+
+        if ($filters['paginate']) {
+            return $articles->paginate($filters['paginate'], ['*'], 'page', $filters['page']);
+        }
+
+        return $articles->get();
     }
 }

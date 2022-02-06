@@ -17,8 +17,13 @@ class Tag extends Model
         $query->withCount('articles');
     }
 
-    public function articles(): BelongsToMany
+    public function articlesByOldest(): BelongsToMany
     {
         return $this->belongsToMany(Article::class)->oldest();
+    }
+
+    public function articles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class);
     }
 }
