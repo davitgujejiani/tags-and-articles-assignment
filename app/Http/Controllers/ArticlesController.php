@@ -27,13 +27,22 @@ class ArticlesController extends Controller
         }
 
         $articles = $service->articles($validator->validated());
+
         return response()->json($articles);
     }
 
-    public function comments(Request $request, ArticlesService $service, Article $article): Collection
+    public function comments(Request $request, ArticlesService $service, Article $article): JsonResponse
     {
-        $filters = ['order' => $request->input('order') ?? 'desc'];
+        $validator = validator($request->query(), [
+            'order' => 'nullable|string|in:asc,desc',
+        ]);
 
-        return $service->articleComments($article, $filters);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 400);
+        }
+
+        $comments = $service->articleComments($article, $validator->validated());
+
+        return response()->json($comments);
     }
 }

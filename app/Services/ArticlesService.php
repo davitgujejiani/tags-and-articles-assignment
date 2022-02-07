@@ -45,8 +45,13 @@ class ArticlesService
         return $articles->get();
     }
 
-    public function articleComments(Article $article, array $filters)
+    public function articleComments(Article $article, array $requestData)
     {
+        // default filter values
+        $filters = ['order' => 'desc'];
+
+        $filters = array_merge($filters, $requestData);
+
         return $this->repository->getArticleComments($article, $filters);
     }
 }
