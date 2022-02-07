@@ -7,22 +7,27 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Services\ArticlesService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ArticlesController extends Controller
 {
-    public function index(Request $request, ArticlesService $service): Collection|LengthAwarePaginator
+    public function index(Request $request, ArticlesService $service): JsonResponse
     {
-        $filters = [
-            'sort'     => $request->input('sort') ?? 'created_at',
-            'order'    => $request->input('order') ?? 'desc',
-            'limit'    => $request->input('limit') ?? '10',
-            'paginate' => $request->input('paginate') ?? null,
-            'page'     => $request->input('page') ?? 1,
-        ];
+        $validator = validator($request->query(), [
+            'sort'     => 'nullable|string|in:comment_count,created_at',
+            'order'    => 'nullable|string|in:asc,desc',
+            'limit'    => 'nullable|integer',
+            'paginate' => 'nullable|integer',
+            'page'     => 'nullable|integer',
+        ]);
 
-        return $service->articles($filters);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 400);
+        }
+
+        $articles = $service->articles($validator->validated());
+        return response()->json($articles);
     }
 
     public function comments(Request $request, ArticlesService $service, Article $article): Collection

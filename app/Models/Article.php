@@ -14,9 +14,7 @@ class Article extends Model
 
     public function scopeSort(Builder $query, array $filters): Builder
     {
-        $column = ($filters['sort'] === 'comment_count') ? 'comments_count' : 'created_at';
-
-        return $query->withCount('comments')->orderBy($column, $filters['order'])->take($filters['limit']);
+        return $query->withCount('comments')->orderBy($filters['sort'], $filters['order'])->take($filters['limit']);
     }
 
     public function comments(): BelongsToMany
