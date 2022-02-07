@@ -27,16 +27,22 @@ class TagsController extends Controller
         return response()->json($tags);
     }
 
-    public function articles(Request $request, TagsService $service, Tag $tag)
+    public function articles(Request $request, TagsService $service, Tag $tag): JsonResponse
     {
-        $filters = [
-            'sort'     => $request->input('sort') ?? 'created_at',
-            'order'    => $request->input('order') ?? 'desc',
-            'limit'    => $request->input('limit') ?? '10',
-            'paginate' => $request->input('paginate') ?? null,
-            'page'     => $request->input('page') ?? 1,
-        ];
+        $validator = validator($request->query(), [
+            'sort'     => 'nullable|string|in:comment_count,created_at',
+            'order'    => 'nullable|string|in:asc,desc',
+            'limit'    => 'nullable|integer',
+            'paginate' => 'nullable|integer',
+            'page'     => 'nullable|integer',
+        ]);
 
-        return $service->articleComments($tag, $filters);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 400);
+        }
+
+        $articles = $service->tagArticles($tag, $validator->validated());
+
+        return response()->json($articles);
     }
 }

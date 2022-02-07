@@ -51,8 +51,23 @@ class TagsService
         return $tags;
     }
 
-    public function articleComments(Tag $tag, array $filters)
+    public function tagArticles(Tag $tag, array $requestData)
     {
+        // default filter values
+        $filters = [
+            'sort'     => 'created_at',
+            'order'    => 'desc',
+            'limit'    => 10,
+            'paginate' => null,
+            'page'     => 1,
+        ];
+
+        $filters = array_merge($filters, $requestData);
+
+        if ($filters['sort'] === 'comment_count') {
+            $filters['sort'] = 'comments_count';
+        }
+
         $articles = $this->repository->getTagArticles($tag, $filters);
 
         if ($filters['paginate']) {
