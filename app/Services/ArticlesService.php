@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Contracts\ArticlesRepositoryContract;
 use App\Models\Article;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class ArticlesService
 {
@@ -16,7 +18,7 @@ class ArticlesService
         $this->repository = $articlesRepositoryContract;
     }
 
-    public function getArticles(array $requestData)
+    public function getArticles(array $requestData): Collection|LengthAwarePaginator
     {
         $defaultFilters = [
             'sort'     => 'created_at',
@@ -44,7 +46,7 @@ class ArticlesService
         return $articles->get();
     }
 
-    public function getArticleComments(Article $article, array $requestData)
+    public function getArticleComments(Article $article, array $requestData): Collection
     {
         $defaultFilters = ['order' => 'desc'];
 

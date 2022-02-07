@@ -26,4 +26,14 @@ class Article extends Model
             'article_id',
         );
     }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Tag::class,
+            'article_tag',
+            'tag_id',
+            'article_id',
+        );
+    }
 }
