@@ -6,18 +6,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use App\Services\TagsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TagsController extends Controller
 {
-    public function index(Request $request, TagsService $service)
+    public function index(Request $request, TagsService $service): JsonResponse
     {
-        $filters = [
-            'sort'  => $request->input('sort') ?? 'article_count',
-            'order' => $request->input('order') ?? 'desc',
-        ];
+        $validator = validator($request->query(), [
+            'sort'     => 'nullable|string|in:article_count,created_at',
+            'order'    => 'nullable|string|in:asc,desc',
+        ]);
 
-        return $service->tags($filters);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 400);
+        }
+
+        $tags = $service->tags($validator->validated());
+
+        return response()->json($tags);
     }
 
     public function articles(Request $request, TagsService $service, Tag $tag)

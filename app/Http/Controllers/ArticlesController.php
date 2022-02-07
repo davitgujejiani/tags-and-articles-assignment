@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Services\ArticlesService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

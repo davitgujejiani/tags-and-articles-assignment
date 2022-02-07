@@ -16,14 +16,26 @@ class TagsService
         $this->repository = $tagsRepositoryContract;
     }
 
-    public function tags(array $filters)
+    public function tags(array $requestData)
     {
+        // default filter values
+        $filters = [
+            'sort'     => 'articles_count',
+            'order'    => 'desc',
+        ];
+
+        $filters = array_merge($filters, $requestData);
+
+        if ($filters['sort'] === 'article_count') {
+            $filters['sort'] = 'articles_count';
+        }
+
         // fetch tags data and turn it into collection
         $tags = collect($this->repository->getTags($filters));
 
         // add the oldest article relation created_at attribute to tag collection for sorting purposes
         foreach ($tags as $tag) {
-            $tag['created_at'] = $tag->articles?->first()?->created_at;
+            $tag['created_at'] = $tag->articlesByOldest?->first()?->created_at;
         }
 
         // sorting logic
@@ -33,7 +45,7 @@ class TagsService
 
         // remove articles and created_at data form collection
         foreach ($tags as $key => $tag) {
-            $tags[$key] = collect($tag)->forget(['articles', 'created_at']);
+            $tags[$key] = collect($tag)->forget(['articles_by_oldest', 'created_at']);
         }
 
         return $tags;
