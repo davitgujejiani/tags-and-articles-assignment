@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Contracts\TagsRepositoryContract;
 use App\Models\Tag;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class TagsService
 {
@@ -16,15 +18,14 @@ class TagsService
         $this->repository = $tagsRepositoryContract;
     }
 
-    public function tags(array $requestData)
+    public function getTags(array $requestData): Collection
     {
-        // default filter values
-        $filters = [
-            'sort'     => 'articles_count',
-            'order'    => 'desc',
+        $defaultFilters = [
+            'sort'  => 'articles_count',
+            'order' => 'desc',
         ];
 
-        $filters = array_merge($filters, $requestData);
+        $filters = array_merge($defaultFilters, $requestData);
 
         if ($filters['sort'] === 'article_count') {
             $filters['sort'] = 'articles_count';
@@ -43,7 +44,7 @@ class TagsService
         $order = $filters['order'] === 'asc' ? 'asc' : 'desc';
         $tags = $tags->sortBy([[$sortBy, $order]]);
 
-        // remove articles and created_at data form collection
+        // remove unnecessary (articles, created_at) data form collection
         foreach ($tags as $key => $tag) {
             $tags[$key] = collect($tag)->forget(['articles_by_oldest', 'created_at']);
         }
@@ -51,10 +52,9 @@ class TagsService
         return $tags;
     }
 
-    public function tagArticles(Tag $tag, array $requestData)
+    public function getTagArticles(Tag $tag, array $requestData): Collection|LengthAwarePaginator
     {
-        // default filter values
-        $filters = [
+        $defaultFilters = [
             'sort'     => 'created_at',
             'order'    => 'desc',
             'limit'    => 10,
@@ -62,7 +62,7 @@ class TagsService
             'page'     => 1,
         ];
 
-        $filters = array_merge($filters, $requestData);
+        $filters = array_merge($defaultFilters, $requestData);
 
         if ($filters['sort'] === 'comment_count') {
             $filters['sort'] = 'comments_count';

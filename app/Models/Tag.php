@@ -12,9 +12,9 @@ class Tag extends Model
 {
     protected $hidden = ['pivot'];
 
-    public function scopeWithArticlesCount(Builder $query)
+    public function scopeWithArticlesCount(Builder $query): Builder
     {
-        $query->withCount('articles');
+        return $query->withCount('articles');
     }
 
     public function articlesByOldest(): BelongsToMany

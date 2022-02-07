@@ -13,23 +13,23 @@ class TagsController extends Controller
 {
     public function index(Request $request, TagsService $service): JsonResponse
     {
-        $validator = validator($request->query(), [
-            'sort'     => 'nullable|string|in:article_count,created_at',
-            'order'    => 'nullable|string|in:asc,desc',
+        $requestData = validator($request->query(), [
+            'sort'  => 'nullable|string|in:article_count,created_at',
+            'order' => 'nullable|string|in:asc,desc',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 400);
+        if ($requestData->fails()) {
+            return response()->json($requestData->messages(), 400);
         }
 
-        $tags = $service->tags($validator->validated());
+        $tagsData = $service->getTags($requestData->validated());
 
-        return response()->json($tags);
+        return response()->json($tagsData);
     }
 
-    public function articles(Request $request, TagsService $service, Tag $tag): JsonResponse
+    public function tagArticles(Request $request, TagsService $service, Tag $tag): JsonResponse
     {
-        $validator = validator($request->query(), [
+        $requestData = validator($request->query(), [
             'sort'     => 'nullable|string|in:comment_count,created_at',
             'order'    => 'nullable|string|in:asc,desc',
             'limit'    => 'nullable|integer',
@@ -37,12 +37,12 @@ class TagsController extends Controller
             'page'     => 'nullable|integer',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 400);
+        if ($requestData->fails()) {
+            return response()->json($requestData->messages(), 400);
         }
 
-        $articles = $service->tagArticles($tag, $validator->validated());
+        $tagArticlesData = $service->getTagArticles($tag, $requestData->validated());
 
-        return response()->json($articles);
+        return response()->json($tagArticlesData);
     }
 }
