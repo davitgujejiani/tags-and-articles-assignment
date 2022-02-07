@@ -16,10 +16,9 @@ class ArticlesService
         $this->repository = $articlesRepositoryContract;
     }
 
-    public function articles(array $requestData)
+    public function getArticles(array $requestData)
     {
-        // default filter values
-        $filters = [
+        $defaultFilters = [
             'sort'     => 'created_at',
             'order'    => 'desc',
             'limit'    => 10,
@@ -27,7 +26,7 @@ class ArticlesService
             'page'     => 1,
         ];
 
-        $filters = array_merge($filters, $requestData);
+        $filters = array_merge($defaultFilters, $requestData);
 
         if ($filters['sort'] === 'comment_count') {
             $filters['sort'] = 'comments_count';
@@ -45,12 +44,11 @@ class ArticlesService
         return $articles->get();
     }
 
-    public function articleComments(Article $article, array $requestData)
+    public function getArticleComments(Article $article, array $requestData)
     {
-        // default filter values
-        $filters = ['order' => 'desc'];
+        $defaultFilters = ['order' => 'desc'];
 
-        $filters = array_merge($filters, $requestData);
+        $filters = array_merge($defaultFilters, $requestData);
 
         return $this->repository->getArticleComments($article, $filters);
     }

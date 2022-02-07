@@ -13,7 +13,7 @@ class ArticlesController extends Controller
 {
     public function index(Request $request, ArticlesService $service): JsonResponse
     {
-        $validator = validator($request->query(), [
+        $requestData = validator($request->query(), [
             'sort'     => 'nullable|string|in:comment_count,created_at',
             'order'    => 'nullable|string|in:asc,desc',
             'limit'    => 'nullable|integer',
@@ -21,27 +21,27 @@ class ArticlesController extends Controller
             'page'     => 'nullable|integer',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 400);
+        if ($requestData->fails()) {
+            return response()->json($requestData->messages(), 400);
         }
 
-        $articles = $service->articles($validator->validated());
+        $articlesData = $service->getArticles($requestData->validated());
 
-        return response()->json($articles);
+        return response()->json($articlesData);
     }
 
-    public function comments(Request $request, ArticlesService $service, Article $article): JsonResponse
+    public function articleComments(Request $request, ArticlesService $service, Article $article): JsonResponse
     {
-        $validator = validator($request->query(), [
+        $requestData = validator($request->query(), [
             'order' => 'nullable|string|in:asc,desc',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 400);
+        if ($requestData->fails()) {
+            return response()->json($requestData->messages(), 400);
         }
 
-        $comments = $service->articleComments($article, $validator->validated());
+        $articleCommentsData = $service->getArticleComments($article, $requestData->validated());
 
-        return response()->json($comments);
+        return response()->json($articleCommentsData);
     }
 }
